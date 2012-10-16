@@ -3,7 +3,7 @@ function setup() {
 		keyboard: new Keyboard(),
 		canvas: document.getElementById("game"),
 		context: document.getElementById("game").getContext("2d"),
-		cells: make2DArray(8, 11)
+		cells: make2DArray(16, 22)
 	};
 
 	var stub = function() {
@@ -64,7 +64,7 @@ function step(state) {
 			for(var c = 0; c < cells[r].length; ++c) {
 				var colour = getColourForCell(cells[r][c]);
 				context.fillStyle = colour;
-				context.fillRect(xOff + c * 32, yOff + r * 32, 32, 32);
+				context.fillRect(xOff + c * 16, yOff + r * 16, 16, 16);
 			}
 		}
 		context.restore();
