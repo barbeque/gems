@@ -49,6 +49,20 @@ function getColourForCell(cellIndex) {
 	}
 }
 
+function drawHud(state) {
+	state.context.save();
+
+	state.context.textBaseline = "top";
+	state.context.fillStyle = "black";
+	state.context.font = "bold 48px sans-serif";
+	state.context.fillText("gems", 20, 20);
+
+	state.context.font = "italic 12px serif";
+	state.context.fillText("match the colours, knave!", 50, 68);
+
+	state.context.restore();
+}
+
 function step(state) {
 	with(state) {
 		context.save();
@@ -68,5 +82,7 @@ function step(state) {
 			}
 		}
 		context.restore();
+
+		drawHud(state);
 	}
 }
