@@ -191,6 +191,14 @@ function step(state) {
 					state.stepTimer = 0;
 				}
 			}
+			if(state.keyboard.isKeyDown(32) || state.keyboard.isKeyDown(state.keyboard.upArrowKeyCode)) { // space... rotate pieces
+				var newDrop = [0, 0, 0];
+				for(var i = 0; i < state.currentDrop.length; ++i) {
+					newDrop[i] = state.currentDrop[(i + 1) % (state.currentDrop.length)];
+				}
+				state.currentDrop = newDrop;
+				state.stepTimer = 0;
+			}
 		}
 
 		drawHud(state);
