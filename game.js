@@ -10,7 +10,8 @@ function setup() {
 		currentDrop: [ 3, 2, 1 ],
 		nextDrop: [ 1, 2, 3 ],
 		currentSpeed: 1.0,
-		score: 0
+		score: 0,
+		stepTimer: 0
 	};
 
 	var stub = function() {
@@ -141,6 +142,18 @@ function clearAdjacencies(state) {
 
 }
 
+function canStepPieceSideways(state, direction) {
+	if(state.dropColumn + direction < 0) {
+		return false;
+	}
+	if(state.dropColumn + direction >= state.cells[0].length) {
+		return false;
+	}
+
+	// TODO: piece collision
+	return true;
+}
+
 function step(state) {
 	with(state) {
 		context.save();
@@ -163,6 +176,22 @@ function step(state) {
 
 		dropPiece(state);
 		drawPiece(state.currentDrop, xOff + state.dropColumn * 16, yOff + state.dropRow * 16, state);
+
+		state.stepTimer += 1;
+		if(state.stepTimer > 2) {
+			if(state.keyboard.isKeyDown(state.keyboard.leftArrowKeyCode)) {
+				if(canStepPieceSideways(state, -1)) {
+					state.dropColumn -= 1;
+					state.stepTimer = 0;
+				}
+			}
+			if(state.keyboard.isKeyDown(state.keyboard.rightArrowKeyCode)) {
+				if(canStepPieceSideways(state, 1)) {
+					state.dropColumn += 1;
+					state.stepTimer = 0;
+				}
+			}
+		}
 
 		drawHud(state);
 	}
