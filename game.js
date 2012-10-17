@@ -3,7 +3,12 @@ function setup() {
 		keyboard: new Keyboard(),
 		canvas: document.getElementById("game"),
 		context: document.getElementById("game").getContext("2d"),
-		cells: make2DArray(16, 22)
+		cells: make2DArray(16, 22),
+		dropTimer: 0,
+		dropColumn: 0,
+		dropRow: 0,
+		currentDrop: [ 3, 2, 1 ],
+		nextDrop: [ 1, 2, 3 ]
 	};
 
 	var stub = function() {
@@ -57,8 +62,27 @@ function drawHud(state) {
 	state.context.font = "bold 48px sans-serif";
 	state.context.fillText("gems", 20, 20);
 
-	state.context.font = "italic 12px serif";
+	state.context.font = "italic 12px sans-serif";
 	state.context.fillText("match the colours, knave!", 50, 68);
+
+	state.context.font = "bold 16px sans-serif";
+	state.context.fillText("score: 19314", 30, 110);
+	state.context.fillText("next:", 30, 130);
+	state.context.fillRect(81, 130, 46, 100);
+
+	drawPiece(state.nextDrop, 81 + 15, 130 + 26, state);
+
+	state.context.restore();
+}
+
+function drawPiece(piece, x, y, state) {
+	state.context.save();
+
+	for(var i = 0; i < piece.length; ++i) {
+		var colour = getColourForCell(piece[i]);
+		state.context.fillStyle = colour;
+		state.context.fillRect(x, y + (i * 16), 16, 16);
+	}
 
 	state.context.restore();
 }
@@ -82,6 +106,8 @@ function step(state) {
 			}
 		}
 		context.restore();
+
+		drawPiece(state.currentDrop, xOff + state.dropColumn * 16, yOff + state.dropRow * 16, state);
 
 		drawHud(state);
 	}
