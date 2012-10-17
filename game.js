@@ -8,7 +8,9 @@ function setup() {
 		dropColumn: 0,
 		dropRow: 0,
 		currentDrop: [ 3, 2, 1 ],
-		nextDrop: [ 1, 2, 3 ]
+		nextDrop: [ 1, 2, 3 ],
+		currentSpeed: 1.0,
+		score: 0
 	};
 
 	var stub = function() {
@@ -66,7 +68,7 @@ function drawHud(state) {
 	state.context.fillText("match the colours, knave!", 50, 68);
 
 	state.context.font = "bold 16px sans-serif";
-	state.context.fillText("score: 19314", 30, 110);
+	state.context.fillText("score: " + state.score, 30, 110);
 	state.context.fillText("next:", 30, 130);
 	state.context.fillRect(81, 130, 46, 100);
 
@@ -85,6 +87,58 @@ function drawPiece(piece, x, y, state) {
 	}
 
 	state.context.restore();
+}
+
+function dropPiece(state) {
+	state.dropTimer += 1 * state.currentSpeed;
+	if(state.dropTimer >= 10) {
+		state.dropRow++;
+		state.dropTimer = 0;
+		// TODO: Collision detection
+
+		if(state.dropRow + 3 >= state.cells.length) {
+			state.dropRow = Math.min(state.cells.length - 4, state.dropRow);
+			// hit the bottom of the level
+			// write the dropped piece into the map
+			writePiece(state.currentDrop, state.dropColumn, state.dropRow, state);
+			resetDrop(state);
+		}
+		else {
+			// check for piece on piece collision
+			var hitAnything = state.cells[state.dropRow + 3][state.dropColumn] > 0;
+			if(hitAnything) {
+				// write the dropped piece into the map
+				writePiece(state.currentDrop, state.dropColumn, state.dropRow, state);
+				resetDrop(state);
+			}
+		}
+	}
+}
+
+function resetDrop(state) {
+	// Reset current position
+	state.dropColumn = 0; // TODO: Fix
+	state.dropRow = 0;
+
+	// Copy next into current,
+	// Grab a new piece into next
+	for(var i = 0; i < state.nextDrop.length; ++i) {
+		state.currentDrop[i] = state.nextDrop[i];
+		state.nextDrop[i] = Math.floor(Math.random() * 4) + 1;
+	}
+
+	// Piece hit, so check the map for adjacencies
+	clearAdjacencies(state);
+}
+
+function writePiece(piece, x, y, state) {
+	for(var i = 0; i < piece.length; ++i) {
+		state.cells[y + i][x] = piece[i];
+	}
+}
+
+function clearAdjacencies(state) {
+
 }
 
 function step(state) {
@@ -107,6 +161,7 @@ function step(state) {
 		}
 		context.restore();
 
+		dropPiece(state);
 		drawPiece(state.currentDrop, xOff + state.dropColumn * 16, yOff + state.dropRow * 16, state);
 
 		drawHud(state);
