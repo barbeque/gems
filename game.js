@@ -117,6 +117,9 @@ function dropPiece(state) {
 }
 
 function resetDrop(state) {
+	var hitPointY = state.dropRow + 3;
+	var hitPointX = state.dropColumn;
+
 	// Reset current position
 	state.dropColumn = 0; // TODO: Fix
 	state.dropRow = 0;
@@ -129,7 +132,7 @@ function resetDrop(state) {
 	}
 
 	// Piece hit, so check the map for adjacencies
-	clearAdjacencies(state);
+	clearAndScore(state, hitPointX, hitPointY);
 }
 
 function writePiece(piece, x, y, state) {
@@ -138,7 +141,7 @@ function writePiece(piece, x, y, state) {
 	}
 }
 
-function clearAdjacencies(state) {
+function clearAdjacencies(state, hitPointX, hitPointY) {
 
 }
 
@@ -176,6 +179,11 @@ function step(state) {
 
 		dropPiece(state);
 		drawPiece(state.currentDrop, xOff + state.dropColumn * 16, yOff + state.dropRow * 16, state);
+
+		if(state.keyboard.isKeyDown(state.keyboard.downArrowKeyCode)) {
+			// extra drop
+			dropPiece(state);
+		}
 
 		state.stepTimer += 1;
 		if(state.stepTimer > 2) {
